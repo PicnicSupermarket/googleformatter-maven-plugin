@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.google.googlejavaformat.java.JavaFormatterOptions.JavadocFormatter;
-import static com.google.googlejavaformat.java.JavaFormatterOptions.SortImports;
 import static com.google.googlejavaformat.java.JavaFormatterOptions.Style;
 
 /**
@@ -65,37 +63,14 @@ public class GoogleFormatterMojo extends AbstractMojo {
   @Parameter(defaultValue = "false")
   protected boolean includeStale;
 
-  @Parameter(defaultValue = "ALSO")
-  protected SortImports sortImports;
-
-  @Parameter(defaultValue = "NONE")
-  protected JavadocFormatter javadocFormatter;
-
   @Parameter(defaultValue = "GOOGLE")
   protected Style style;
-
-  @Parameter(defaultValue = "100", property = "formatter.length")
-  protected int maxWidth;
 
   @Parameter(defaultValue = "false", property = "formatter.skip")
   protected boolean skip;
 
   @Parameter(defaultValue = "false", property = "formatter.modified")
   protected boolean filterModified;
-
-  public static class JavaFormatterOptionsWithCustomLength extends JavaFormatterOptions {
-    int maxLineLength;
-
-    public JavaFormatterOptionsWithCustomLength(JavadocFormatter javadocFormatter, Style style, SortImports sortImports, int maxLineLength) {
-      super(javadocFormatter, style, sortImports);
-      this.maxLineLength = maxLineLength;
-    }
-
-    @Override
-    public int maxLineLength() {
-      return maxLineLength;
-    }
-  }
 
   public void execute() throws MojoExecutionException {
 
@@ -120,7 +95,7 @@ public class GoogleFormatterMojo extends AbstractMojo {
       for (File file : sourceFilesToProcess) {
         String source = CharStreams.toString(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 
-        JavaFormatterOptions options = new JavaFormatterOptionsWithCustomLength(javadocFormatter, style, sortImports, maxWidth);
+        JavaFormatterOptions options = JavaFormatterOptions.builder().style(style).build();
         Formatter formatter = new Formatter(options);
         String formattedSource = formatter.formatSource(source);
 

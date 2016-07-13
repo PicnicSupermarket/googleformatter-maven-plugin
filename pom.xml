@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.theoryinpractise</groupId>
+  <groupId>com.github.PicnicSupermarket</groupId>
   <artifactId>googleformatter-maven-plugin</artifactId>
-  <version>1.0.7-SNAPSHOT</version>
+  <version>1.0.6-gjf-9a7a8b4322</version>
   <packaging>maven-plugin</packaging>
 
   <name>googleformatter-maven-plugin Maven Mojo</name>
@@ -35,6 +35,14 @@
     <url>http://github.com/talios/clojure-maven-plugin</url>
     <tag>HEAD</tag>
   </scm>
+
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+
   <distributionManagement>
     <repository>
       <id>sonatype-staging</id>
@@ -106,9 +114,9 @@
       <version>0.28</version>
     </dependency>
     <dependency>
-      <groupId>com.google.googlejavaformat</groupId>
+      <groupId>com.github.google.google-java-format</groupId>
       <artifactId>google-java-format</artifactId>
-      <version>1.0</version>
+      <version>9a7a8b4322</version>
     </dependency>
     <dependency>
       <groupId>com.google.errorprone</groupId>
