@@ -4,7 +4,7 @@
 
   <groupId>com.github.PicnicSupermarket</groupId>
   <artifactId>googleformatter-maven-plugin</artifactId>
-  <version>1.0.6-gjf-3b7ec93449</version>
+  <version>1.0.6-picnic-1-gjf-3b7ec93449</version>
   <packaging>maven-plugin</packaging>
 
   <name>googleformatter-maven-plugin Maven Mojo</name>

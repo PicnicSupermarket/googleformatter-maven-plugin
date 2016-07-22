@@ -1,12 +1,8 @@
 package com.theoryinpractise.googleformatter;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.hash.HashCode;
-import com.google.common.hash.Hashing;
-import com.google.common.io.CharStreams;
-import com.google.common.io.Files;
-import com.google.googlejavaformat.java.Formatter;
-import com.google.googlejavaformat.java.JavaFormatterOptions;
+import com.google.googlejavaformat.java.Main;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
@@ -25,9 +21,6 @@ import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 import org.codehaus.plexus.compiler.util.scan.mapping.SuffixMapping;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -92,21 +85,9 @@ public class GoogleFormatterMojo extends AbstractMojo {
 
       Set<File> sourceFilesToProcess = filterModified ? filterUnchangedFiles(sourceFiles) : sourceFiles;
 
-      for (File file : sourceFilesToProcess) {
-        String source = CharStreams.toString(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
-
-        JavaFormatterOptions options = JavaFormatterOptions.builder().style(style).build();
-        Formatter formatter = new Formatter(options);
-        String formattedSource = formatter.formatSource(source);
-
-        HashCode sourceHash = Hashing.sha1().hashString(source, StandardCharsets.UTF_8);
-        HashCode formattedHash = Hashing.sha1().hashString(formattedSource, StandardCharsets.UTF_8);
-
-        if (!formattedHash.equals(sourceHash)) {
-          // overwrite existing file
-          Files.write(formattedSource, file, StandardCharsets.UTF_8);
-          getLog().info("Reformatted file " + file.getPath());
-        }
+      if (!sourceFilesToProcess.isEmpty()) {
+        String[] args = getCliArgs(sourceFilesToProcess);
+        SystemExitInterceptor.invoke(() -> Main.main(args)); 
       }
     } catch (Exception e) {
       throw new MojoExecutionException(e.getMessage());
@@ -152,5 +133,18 @@ public class GoogleFormatterMojo extends AbstractMojo {
 
   protected SourceInclusionScanner getSourceInclusionScanner(boolean includeStale) {
     return includeStale ? new SimpleSourceInclusionScanner(Collections.singleton("**/*"), Collections.EMPTY_SET) : new StaleSourceScanner(1024);
+  }
+
+  private String[] getCliArgs(Set<File> sourceFilesToProcess) {
+    int extraArgs = Style.AOSP.equals(style) ? 2 : 1;
+    String[] pathsToProcess =
+        sourceFilesToProcess.stream().map(File::getAbsolutePath).toArray(String[]::new);
+    final String[] args = new String[extraArgs + pathsToProcess.length];
+    args[0] = "--replace";
+    if (extraArgs > 1) {
+      args[1] = "--aosp";
+    }
+    System.arraycopy(pathsToProcess, 0, args, extraArgs, pathsToProcess.length);
+    return args;
   }
 }
